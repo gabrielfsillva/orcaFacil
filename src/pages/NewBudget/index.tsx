@@ -5,8 +5,8 @@ import { generateWhatsappMessage } from "../../utils/whatsappMessage";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { generatePdf } from "../../utils/generatePdf";
-import InputMask from "react-input-mask";
 import { toast } from "react-toastify";
+import { IMaskInput } from "react-imask";
 
 function NewBudget() {
   const navigate = useNavigate();
@@ -278,12 +278,12 @@ function NewBudget() {
             onChange={(e) => setCustomerName(e.target.value)}
           />
 
-          <InputMask
-            mask="(99) 99999-9999"
+          <IMaskInput
+            mask="(00) 00000-0000"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="border rounded p-3"
+            onAccept={(value) => setPhone(String(value))}
             placeholder="Telefone"
+            className="border rounded p-3"
           />
         </div>
 
