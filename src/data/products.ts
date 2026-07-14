@@ -117,6 +117,57 @@ export const products: Product[] = [
     price: 1.80,
   },
 
+  {
+    id: "bolo-simple",
+    name: "Bolo Simple",
+    category: "Doce",
+    price: 18.00,
+  },
+
+  {
+    id: "bolo-massa-puba",
+    name: "Bolo Massa Puba",
+    category: "Doce",
+    price: 17.00,
+  },
+
+  {
+    id: "carolina-de-chocolate",
+    name: "Carolina de Chocolate",
+    category: "Doce",
+    price: 3.10,
+  },
+
+  {
+    id: "carolina-de-limao",
+    name: "Carolina de Limão",
+    category: "Doce",
+    price: 3.10,
+  },
+
+  {
+    id: "rocoambole-de-goiabada",
+    name: "Rocambole de Goiabada",
+    category: "Doce",
+    price: 18.00,
+  },
+
+  {
+    id: "rocoambole-de-doce-de-leite",
+    name: "Rocambole de Doce de Leite",
+    category: "Doce",
+    price: 18.00,
+  },
+
+  {
+    id: "rocoambole-de-chocolate",
+    name: "Rocambole de Chocolate",
+    category: "Doce",
+    price: 18.00,
+  },
+
+
+
   // TORTELETES
 
   {
@@ -139,4 +190,43 @@ export const products: Product[] = [
     category: "Tortelete",
     price: 1.10,
   },
+
+// BEBIDAS
+  {
+    id: "refrigerante-2l",
+    name: "Refrigerante 2L",
+    category: "Bebida",
+    price: 14.90,
+  },
+  
+  {
+    id: "suco-1,5l",
+    name: "Suco 1,5L",
+    category: "Bebida",
+    price: 11.90,
+  },
+
+  {
+    id: "agua-1,5l",
+    name: "Água 1,5L",
+    category: "Bebida",
+    price: 8.90,
+  },
+
+  // descartaveis
+  {
+    id: "guardanapos",
+    name: "Guardanapos",
+    category: "Descartavel",
+    price: 4.00,
+  },
+
+  {
+    id: "pct-copos-descartaveis",
+    name: "Pct. Copos Descartáveis",
+    category: "Descartavel",
+    price: 8.50,
+  },
+
+
 ];

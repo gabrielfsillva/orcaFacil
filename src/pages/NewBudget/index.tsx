@@ -4,9 +4,17 @@ import { formatCurrency } from "../../utils/currency";
 import { generateWhatsappMessage } from "../../utils/whatsappMessage";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { generatePdf } from "../../utils/generatePdf";
 import { toast } from "react-toastify";
 import { IMaskInput } from "react-imask";
+import {
+  User,
+  Phone,
+  CalendarDays,
+  Clock,
+  FileText,
+  ClipboardList,
+  LayoutDashboard,
+} from "lucide-react";
 
 function NewBudget() {
   const navigate = useNavigate();
@@ -179,30 +187,7 @@ function NewBudget() {
     resetForm();
     navigate("/history");
   };
-  const copyBudget = async () => {
-    if (items.length === 0) {
-      toast.error("Adicione pelo menos um item.");
-      return;
-    }
-    const message = generateWhatsappMessage(
-      customerName,
-      phone,
-      deliveryDate,
-      deliveryTime,
-      notes,
-      items,
-      total,
-      deposit,
-      remaining,
-    );
-    await navigator.clipboard.writeText(message);
-    const confirmed = window.confirm(
-      "Orçamento copiado com sucesso!\n\nDeseja iniciar um novo orçamento?",
-    );
-    if (confirmed) {
-      resetForm();
-    }
-  };
+  
   const sendToWhatsapp = () => {
     if (items.length === 0) {
       alert("Adicione pelo menos um item.");
@@ -231,240 +216,368 @@ function NewBudget() {
     );
   };
 
-  const exportPdf = () => {
-    if (items.length === 0) {
-      alert("Adicione pelo menos um item.");
-      return;
-    }
-
-    generatePdf(
-      customerName,
-      phone,
-      deliveryDate,
-      deliveryTime,
-      notes,
-      items,
-      total,
-    );
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow p-6">
-        <h1 className="text-3xl font-bold mb-6">
-          {editingId ? "Editar Orçamento" : "Novo Orçamento"}
-        </h1>
-        <div className="mb-6">
-          <button
-            onClick={() => navigate("/history")}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-          >
-            Ver Orçamentos Salvos
-          </button>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 ml-2"
-          >
-            Dashboard
-          </button>
-        </div>
+        <header className="bg-white rounded-xl shadow-md border mb-8">
+          <div className="px-8 py-6 border-b">
+            <h1 className="text-3xl font-bold text-slate-800">NexOrder</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <input
-            type="text"
-            placeholder="Nome do Cliente"
-            className="border rounded p-3"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-          />
-
-          <IMaskInput
-            mask="(00) 00000-0000"
-            value={phone}
-            onAccept={(value) => setPhone(String(value))}
-            placeholder="Telefone"
-            className="border rounded p-3"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <input
-            type="date"
-            className="border rounded p-3"
-            value={deliveryDate}
-            onChange={(e) => setDeliveryDate(e.target.value)}
-          />
-
-          <input
-            type="time"
-            className="border rounded p-3"
-            value={deliveryTime}
-            onChange={(e) => setDeliveryTime(e.target.value)}
-          />
-        </div>
-
-        <textarea
-          placeholder="Observações do pedido..."
-          className="border rounded p-3 w-full mb-6"
-          rows={4}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <select
-            className="border rounded p-3"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="">Todas Categorias</option>
-
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="🔍 Buscar produto..."
-              className="border rounded p-3 w-full"
-              value={searchProduct}
-              onChange={(e) => {
-                setSearchProduct(e.target.value);
-                setShowSuggestions(true);
-              }}
-            />
-
-            {showSuggestions && searchProduct && (
-              <div className="absolute z-10 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="p-3 hover:bg-slate-100 cursor-pointer"
-                    onClick={() => {
-                      setSelectedProductId(product.id);
-                      setSearchProduct(product.name);
-                      setShowSuggestions(false);
-                    }}
-                  >
-                    <div className="font-medium">{product.name}</div>
-
-                    <div className="text-sm text-gray-500">
-                      {formatCurrency(product.price)}
-                    </div>
-                  </div>
-                ))}
-
-                {filteredProducts.length === 0 && (
-                  <div className="p-3 text-gray-500">
-                    Nenhum produto encontrado
-                  </div>
-                )}
-              </div>
-            )}
+            <p className="text-gray-500 mt-1">Gestão Inteligente de Pedidos</p>
           </div>
 
-          <input
-            type="number"
-            placeholder="Quantidade"
-            className="border rounded p-3"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-
-          <button
-            onClick={addItem}
-            className="bg-blue-600 text-white rounded p-3 hover:bg-blue-700"
-          >
-            Adicionar
-          </button>
-        </div>
-
-        <div className="border rounded-lg p-4 mb-6">
-          <h2 className="font-bold text-lg mb-4">Itens do Orçamento</h2>
-
-          {items.length === 0 && (
-            <p className="text-gray-500">Nenhum item adicionado.</p>
-          )}
-
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className="flex justify-between items-center py-2 border-b"
+          <div className="flex gap-2 p-4">
+            <button
+              onClick={() => navigate("/history")}
+              className="flex items-center gap-2 px-5 py-3 rounded-lg hover:bg-slate-100 transition"
             >
-              <span>
-                {item.quantity}x {item.product.name}
-              </span>
+              <ClipboardList size={20} />
+              Pedidos
+            </button>
 
-              <div className="flex items-center gap-4">
-                <span>{formatCurrency(item.subtotal)}</span>
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center gap-2 px-5 py-3 rounded-lg hover:bg-slate-100 transition"
+            >
+              <LayoutDashboard size={20} />
+              Dashboard
+            </button>
+          </div>
+        </header>
 
-                <button
-                  onClick={() => setItems(items.filter((_, i) => i !== index))}
-                  className="text-red-600 font-bold hover:text-red-800"
-                >
-                  ✕
-                </button>
-              </div>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-2">
+              <User size={22} />
+              Informações do Pedido
+            </h2>
+
+            <p className="text-sm text-slate-500 mt-1">
+              Informe os dados para contato e entrega.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                <User size={16} />
+                Nome Completo
+              </label>
+
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Digite o nome do cliente"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+        focus:border-blue-500 transition"
+              />
             </div>
-          ))}
+
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                <Phone size={16} />
+                WhatsApp
+              </label>
+
+              <IMaskInput
+                mask="(00) 00000-0000"
+                value={phone}
+                onAccept={(value) => setPhone(String(value))}
+                placeholder="(82) 99999-9999"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+        focus:border-blue-500 transition"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                <CalendarDays size={16} />
+                Data de Entrega
+              </label>
+
+              <input
+                type="date"
+                value={deliveryDate}
+                onChange={(e) => setDeliveryDate(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+        focus:border-blue-500 transition"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+                <Clock size={16} />
+                Horário
+              </label>
+
+              <input
+                type="time"
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+        focus:border-blue-500 transition"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
+              <FileText size={16} />
+              Observações
+            </label>
+
+            <textarea
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Ex.: retirar às 16h, sem cebola, entregar na recepção..."
+              className="w-full rounded-xl border border-slate-300 px-4 py-3
+      resize-none
+      focus:outline-none focus:ring-2 focus:ring-blue-500
+      focus:border-blue-500 transition"
+            />
+          </div>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-4">
-          <h2 className="font-bold text-lg mb-4">Resumo</h2>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-slate-800">
+              Itens do Pedido
+            </h2>
 
-          <div className="space-y-2">
-            <p>
-              Total: <strong>{formatCurrency(total)}</strong>
-            </p>
-
-            <p>
-              Entrada (50%): <strong>{formatCurrency(deposit)}</strong>
-            </p>
-
-            <p>
-              Saldo: <strong>{formatCurrency(remaining)}</strong>
+            <p className="text-sm text-slate-500 mt-1">
+              Adicione os produtos que farão parte do orçamento.
             </p>
           </div>
 
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={saveBudget}
-              className="flex-1 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700"
-            >
-              {editingId ? "Atualizar Orçamento" : "Salvar Orçamento"}
-            </button>
+          <div className="grid grid-cols-12 gap-4 mb-6">
+            {/* Categoria */}
+            <div className="col-span-12 md:col-span-3">
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Categoria
+              </label>
 
-            <button
-              onClick={copyBudget}
-              className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700"
-            >
-              Copiar
-            </button>
+              <select
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="">Todas</option>
 
-            <button
-              onClick={exportPdf}
-              className="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700"
-            >
-              PDF
-            </button>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <button
-              onClick={sendToWhatsapp}
-              className="flex-1 bg-emerald-700 text-white py-3 rounded-lg hover:bg-emerald-800"
-            >
-              WhatsApp
-            </button>
+            {/* Produto */}
+            <div className="col-span-12 md:col-span-5 relative">
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Produto
+              </label>
 
-            <button
-              onClick={resetForm}
-              className="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600"
-            >
-              Limpar
-            </button>
+              <input
+                type="text"
+                placeholder="Pesquisar produto..."
+                value={searchProduct}
+                onChange={(e) => {
+                  setSearchProduct(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              />
+
+              {showSuggestions && searchProduct && (
+                <div className="absolute z-20 mt-2 w-full rounded-xl bg-white border shadow-xl overflow-hidden max-h-64 overflow-y-auto">
+                  {filteredProducts.map((product) => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedProductId(product.id);
+                        setSearchProduct(product.name);
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full text-left px-4 py-3 hover:bg-blue-50 transition border-b last:border-none"
+                    >
+                      <div className="font-medium text-slate-800">
+                        {product.name}
+                      </div>
+
+                      <div className="text-sm text-blue-600 font-semibold">
+                        {formatCurrency(product.price)}
+                      </div>
+                    </button>
+                  ))}
+
+                  {filteredProducts.length === 0 && (
+                    <div className="px-4 py-4 text-slate-500">
+                      Nenhum produto encontrado.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Quantidade */}
+            <div className="col-span-6 md:col-span-2">
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Quantidade
+              </label>
+
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="0"
+                className="w-full rounded-xl border border-slate-300 px-4 py-3
+        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              />
+            </div>
+
+            {/* Botão */}
+            <div className="col-span-6 md:col-span-2 flex items-end">
+              <button
+                onClick={addItem}
+                className="w-full rounded-xl bg-blue-600 py-3 text-white font-semibold hover:bg-blue-700 transition"
+              >
+                Adicionar
+              </button>
+            </div>
+          </div>
+
+          {/* Lista */}
+
+          {items.length === 0 ? (
+            <div className="rounded-xl border-2 border-dashed border-slate-300 py-12 text-center">
+              <h3 className="font-semibold text-slate-700">
+                Nenhum produto adicionado
+              </h3>
+
+              <p className="text-slate-500 mt-2">
+                Utilize o formulário acima para adicionar produtos ao pedido.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-200 overflow-hidden">
+              <div className="grid grid-cols-12 bg-slate-100 px-4 py-3 font-semibold text-slate-700">
+                <div className="col-span-6">Produto</div>
+                <div className="col-span-2 text-center">Qtd</div>
+                <div className="col-span-3 text-right">Subtotal</div>
+                <div className="col-span-1"></div>
+              </div>
+
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-12 items-center px-4 py-4 border-t hover:bg-slate-50 transition"
+                >
+                  <div className="col-span-6">
+                    <p className="font-medium text-slate-800">
+                      {item.product.name}
+                    </p>
+
+                    <p className="text-sm text-slate-500">
+                      {formatCurrency(item.product.price)} cada
+                    </p>
+                  </div>
+
+                  <div className="col-span-2 text-center font-semibold">
+                    {item.quantity}
+                  </div>
+
+                  <div className="col-span-3 text-right font-bold text-blue-700">
+                    {formatCurrency(item.subtotal)}
+                  </div>
+
+                  <div className="col-span-1 text-right">
+                    <button
+                      onClick={() =>
+                        setItems(items.filter((_, i) => i !== index))
+                      }
+                      className="text-red-500 hover:text-red-700 text-xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-800">
+                Resumo Financeiro
+              </h2>
+
+              <p className="text-sm text-slate-500">
+                Confira os valores antes de finalizar o pedido.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            <div className="rounded-xl bg-blue-50 border border-blue-100 p-5">
+              <p className="text-sm text-slate-500">Valor Total</p>
+
+              <h3 className="text-3xl font-bold text-blue-700 mt-2">
+                {formatCurrency(total)}
+              </h3>
+            </div>
+
+            <div className="rounded-xl bg-amber-50 border border-amber-100 p-5">
+              <p className="text-sm text-slate-500">Entrada (50%)</p>
+
+              <h3 className="text-3xl font-bold text-amber-600 mt-2">
+                {formatCurrency(deposit)}
+              </h3>
+            </div>
+
+            <div className="rounded-xl bg-green-50 border border-green-100 p-5">
+              <p className="text-sm text-slate-500">Saldo Restante</p>
+
+              <h3 className="text-3xl font-bold text-green-700 mt-2">
+                {formatCurrency(remaining)}
+              </h3>
+            </div>
+          </div>
+
+          <div className="border-t mt-8 pt-6">
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={saveBudget}
+                className="flex-1 min-w-[220px] bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 font-semibold transition"
+              >
+                {editingId ? "Atualizar Pedido" : "Salvar Pedido"}
+              </button>
+
+              <button
+                onClick={sendToWhatsapp}
+                className="flex-1 min-w-[220px] bg-green-600 hover:bg-green-700 text-white rounded-xl py-4 font-semibold transition"
+              >
+                Enviar para WhatsApp
+              </button>
+
+              <button
+                onClick={resetForm}
+                className="min-w-[170px] bg-slate-200 hover:bg-slate-300 rounded-xl py-4 font-semibold text-slate-700 transition"
+              >
+                Limpar
+              </button>
+            </div>
           </div>
         </div>
       </div>
